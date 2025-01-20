@@ -168,14 +168,14 @@ function git_init() {
       info "login to the source repository"
       gh auth login --git-protocol "https" --hostname "${SOURCE_REPO_HOSTNAME}" --with-token <<< "${SOURCE_GH_TOKEN}"
       info "login to the target repository"
-      gh auth login --git-protocol "https" --hostname "${SOURCE_REPO_HOSTNAME}" --with-token <<< "${TARGET_GH_TOKEN}"
+      gh auth login --git-protocol "https" --hostname "${SOURCE_REPO_HOSTNAME}" --with-token <<< "${GITHUB_TOKEN}"
       gh auth status --hostname "${source_repo_hostname}"
       gh auth switch
       gh auth status --hostname "${source_repo_hostname}"
       gh auth setup-git --hostname "${source_repo_hostname}"
       info "done set git global configuration"    
     else
-      gh auth login --git-protocol "https" --hostname "${SOURCE_REPO_HOSTNAME}" --with-token <<< "${TARGET_GH_TOKEN}"
+      gh auth login --git-protocol "https" --hostname "${SOURCE_REPO_HOSTNAME}" --with-token <<< "${GITHUB_TOKEN}"
       gh auth setup-git --hostname "${source_repo_hostname}"
     fi       
   fi
