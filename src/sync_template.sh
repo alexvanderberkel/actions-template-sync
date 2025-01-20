@@ -63,6 +63,11 @@ info "logged in as"
 gh auth status --hostname "${source_repo_hostname}"
 # Check if the repository exists
 
+unset gh_token 
+info "gh_token is unset"
+set gh_token="${SOURCE_GH_TOKEN}"
+gh auth status --hostname "${source_repo_hostname}"
+
 gh repo list --visibility public
 gh auth status --active
 gh repo list --visibility private
