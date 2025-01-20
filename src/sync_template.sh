@@ -65,7 +65,14 @@ gh auth status --hostname "${source_repo_hostname}"
 
 unset gh_token 
 info "gh_token is unset"
-export gh_token="${SOURCE_GH_TOKEN}"
+if [[ -n "${SOURCE_GH_TOKEN}" ]]; then
+  export gh_token="${SOURCE_GH_TOKEN}"
+  gh auth login --git-protocol "https" --hostname "${SOURCE_REPO_HOSTNAME}" --with-token <<< "${SOURCE_GH_TOKEN}"  
+else
+  export gh_token="${GITHUB_TOKEN}"
+  gh auth login --git-protocol "https" --hostname "${SOURCE_REPO_HOSTNAME}" --with-token <<< "${GITHUB_TOKEN}"  
+fi
+
 gh auth status --hostname "${source_repo_hostname}"
 
 gh repo list --visibility public
