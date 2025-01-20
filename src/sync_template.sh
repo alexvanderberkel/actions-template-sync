@@ -65,7 +65,7 @@ gh auth status --hostname "${source_repo_hostname}"
 
 unset gh_token 
 info "gh_token is unset"
-set gh_token="${SOURCE_GH_TOKEN}"
+export gh_token="${SOURCE_GH_TOKEN}"
 gh auth status --hostname "${source_repo_hostname}"
 
 gh repo list --visibility public
