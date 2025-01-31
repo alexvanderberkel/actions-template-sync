@@ -112,6 +112,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         #
         SOURCE_REPO_PATH: ${{ inputs.source_repo_path }}
+        TARGET_REPO_PATH: ${{ inputs.target_repo_path }}
         UPSTREAM_BRANCH: ${{ inputs.upstream_branch }}
         SSH_PRIVATE_KEY_SRC: ${{ inputs.source_repo_ssh_private_key }}
         PR_BRANCH_NAME_PREFIX: ${{ inputs.pr_branch_name_prefix }}
