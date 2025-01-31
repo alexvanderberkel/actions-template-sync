@@ -341,7 +341,7 @@ function push () {
     return 1
   fi
 
-  args=(--set-upstream origin "${TARGET_REPO}/${branch}")
+  args=(--set-upstream origin "${TARGET_REPO_PATH}/${branch}")
 
   if [ "$is_force" == true ] ; then
     warn "forcing the push."
