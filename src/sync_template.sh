@@ -356,9 +356,8 @@ function push () {
   if [[ -n "${TARGET_REPO_PATH}" ]]; then
     export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
     TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
-    export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"  
-    git remote set-url origin "${TARGET_REPO}"
-    git push "${args[@]}"     
+    export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"      
+    git push "${TARGET_REPO}" "${args[@]}"     
   else
     git push "${args[@]}"
   fi  
