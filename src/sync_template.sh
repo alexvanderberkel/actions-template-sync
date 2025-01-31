@@ -355,7 +355,7 @@ function push () {
     export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"  
 
     info "${TARGET_REPO}"
-    info "$TARGET_REPO_PATH"
+    info "$TARGET_REPO_PATH}"
 
     eval "git push ${TARGET_REPO} ${args[*]}"     
   else
