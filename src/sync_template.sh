@@ -353,7 +353,7 @@ function push () {
     export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
     TARGET_REPO_PREFIX="https://github.com${TARGET_REPO_HOSTNAME}/"  
     export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"    
-    eval "git push ${TARGET_REPO} ${args[@]}"    
+    eval "git push ${TARGET_REPO} ${args[*]}"     
   else
     git push "${args[@]}"
   fi  
