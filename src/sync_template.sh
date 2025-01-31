@@ -331,8 +331,6 @@ function eventual_create_labels () {
 function push () {
   info "push changes"
 
-
-
   local branch=$1
   local is_force=$2
   local is_with_tags=$3
@@ -343,7 +341,7 @@ function push () {
     return 1
   fi
 
-  args=(--set-upstream origin "${branch}")
+  args=(--set-upstream origin "${TARGET_REPO}/${branch}")
 
   if [ "$is_force" == true ] ; then
     warn "forcing the push."
