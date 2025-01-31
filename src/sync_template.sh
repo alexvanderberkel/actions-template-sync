@@ -330,7 +330,8 @@ function eventual_create_labels () {
 ##############################
 function push () {
   info "push changes"
-  
+
+
 
   local branch=$1
   local is_force=$2
@@ -346,9 +347,18 @@ function push () {
   if [ "$is_with_tags" == true ] ; then
     warn "include tags."
     args+=(--tags)
+  fi
+
+  if TARGET_REPO_PATH == "null" ; then
+    export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
+    TARGET_REPO_PREFIX="https://github.com${TARGET_REPO_HOSTNAME}/"  
+    export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"
+    git push ${TARGET_REPO} "${args[@]}"
+  else
+    git push "${args[@]}"
   fi  
   
-  git push "${args[@]}"
+  
   
 }
 
