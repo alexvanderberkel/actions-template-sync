@@ -349,7 +349,7 @@ function push () {
     args+=(--tags)
   fi
   
-  if [[ -z "${TARGET_REPO_PATH}" ]]; then
+  if [[ -n "${TARGET_REPO_PATH}" ]]; then
     export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
     TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
     export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"  
