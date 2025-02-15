@@ -66,10 +66,6 @@ flowchart LR
 * It is not necessarily needed that source and target repository have the same base history.
   Because of that reason, it is possible to merge 2 totally different repositories with the help of the action.
 
-## Limitations
-
-If you would like to synchronize workflow files, you have to use a GitHub App with the `workflows` permission. The `GITHUB_TOKEN` does not have this permission.
-
 ## Usage
 
 Usage changes depending on whether the template repository is public or private, regardless of the visibility of the current repository.
