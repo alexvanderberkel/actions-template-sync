@@ -365,14 +365,6 @@ function push () {
   else
     git push "${args[@]}"
   fi  
-  
-  
-  
-
-
-  git push "${args[@]}"
-
-
 }
 
 ####################################
