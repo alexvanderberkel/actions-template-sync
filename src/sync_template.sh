@@ -123,7 +123,7 @@ function gh_login_target_github() {
   echo "::endgroup::"
 }
 
-#######################################
+#######################################pr
 # set the gh action outputs if run with github action.
 # Arguments:
 #   pr_branch
@@ -344,6 +344,12 @@ function push () {
     return 1
   fi
 
+    # Check if the branch exists in the remote repository
+  if git ls-remote --exit-code --heads origin "${branch}"; then
+    warn "Git branch '${branch}' exists in the remote repository. Exiting."
+    return 1
+  fi
+
   args=(--set-upstream origin "${branch}")
 
   if [ "$is_force" == true ] ; then
@@ -365,6 +371,23 @@ function push () {
   else
     git push "${args[@]}"
   fi  
+  
+  # Increase Git buffer size
+  git config --global http.postBuffer 524288000
+
+  # Retry the push operation
+  for i in {1..3}; do
+    if git push "${args[@]}"; then
+      info "pushed successfully"
+      return 0
+    else
+      warn "push failed, retrying ($i/3)"
+      sleep 5
+    fi
+  done
+
+  err "push failed after 3 attempts"
+  return 1
 }
 
 ####################################
