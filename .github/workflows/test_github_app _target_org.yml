@@ -1,4 +1,4 @@
-name: test-github_app
+name: test-github_app_on_target_org
 
 on:
   push:
