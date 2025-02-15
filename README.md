@@ -197,19 +197,60 @@ jobs:
 :warning: when the source repository is private using PATs, also the target repository must be private.
 Else it won't work.
 
-[Personal access token][github-pat] is an alternative to using passwords for authentication to GitHub. You can add a kind
-of password to your GitHub account. You need to set the scopes.
+[Personal access token][github-pat] is an alternative to using passwords for authentication to GitHub.
+You can add a kind of password to your GitHub account. The PAT needs a scope.
+We need different scopes for the source and target repo.
+
+##### a. Source repo
+
+The workflow needs read access to the source repo.
+
+You need to set the scopes to read the source repo.
+
+###### Fine grained source repo
+
+* `contents` -> read
+* `metadata` -> read
+
+###### Classic source repo
 
 * `repo` -> all
 * `read:org`
 
-![pat-scopes](docs/assets/pat_needed_scopes.png)
+![pat-scopes](docs/assets/pat_needed_scopes_source_repo.png)
+
+###### General source repo
 
 Furthermore, you need to set the access within the source repository to allow GitHub actions within the target repository.
 As mentioned before (you can see the note in the image) you need to set the target repository to private.
 settings -> actions -> general.
 
 ![pat-source-repo-access](docs/assets/pat_needed_access_source_repo.png)
+
+##### b. Target repo
+
+###### Fine grained target repo
+
+* `contents` -> write
+* `metadata` -> read
+* `pull requests` -> write
+
+If you are automatically adding reviewers you also need
+
+* `organisation:members` read permissions to the PAT token.
+
+![pat-scopes-fine-grained](docs/assets/pat_fine_grained_needed_scopes.png)
+
+###### Classic target repo
+
+When the action detects any changes, it will create a new branch and will push the updates to this branch.
+When no files are changed in the `.github/workflows` directory, this works well with the default `${{ github.token }}` token.
+This token does however not have `workflow` scope and can therefore not make any changes to these files.
+For this purpose a token must be created with the following scope as depicted in the figure below.
+
+* `workflow` -> will also enable `repo`
+* `admin:read`
+ ![pat-scopes](docs/assets/pat_needed_scopes_target_repo.png)
 
 example workflow definition
 
@@ -293,6 +334,17 @@ jobs:
   * If PR branch already exists (e.g. after a 2nd run) the action won't update the branch but will still output the branch name
   * If the remote repository already contains the source repository changes the action will exit and the output variable will be undefined
   * If there are no changes the action will exit and the output variable will be undefined
+
+### Change the target branch
+
+Per default the action is using the default branch as the target. To change this behaviour just add it to the checkout action
+
+```yaml
+  - name: Checkout
+    uses: actions/checkout@v4
+    with:
+      ref: <target_branch>  # defaults to the default branch
+```
 
 ### Docker
 
@@ -607,18 +659,18 @@ The idea is to use the [docker action][action-docker]
 
 ## Troubleshooting
 
-* refusing to allow a GitHub App to create or update workflow `.github/workflows/******.yml` without `workflows` permission
-
-  This happens because the template repository is trying to overwrite some files inside `.github/workflows/`.
+* The error message `refusing to allow a GitHub App to create or update workflow '.github/workflows/<script-name>.yml' without 'workflows' permission)`
+is indicating that the PAT in the `target_gh_token` does not have the correct permissions.
+This happens because the template repository is trying to overwrite some files inside `.github/workflows/`.
 
   Currently `GITHUB_TOKEN` can't be given `workflow` permission.
-  You can grant our workflow with `workflows` permission using a PAT following the steps below:
+  You can grant our workflow with `workflow` permission using a PAT following the steps below:
 
-  1. [Create a PAT][github-create-pat] with these repository permissions granted: `contents:write`, `workflows:write`, `metadata:read`.
+  1. [Create a PAT][github-create-pat] with these repository permissions granted: `workflow`.
 
   2. Copy the generated token and [create a new secret for your target repository][github-create-secret].
 
-  3. Configure the `checkout` action to use the token in secrets like this:
+  3. Configure the `actions-template-sync` step to use the freshly generated token in `target_gh_token` like this:
 
      ```yaml
      # File: .github/workflows/template-sync.yml
@@ -643,12 +695,12 @@ The idea is to use the [docker action][action-docker]
              uses: actions/checkout@v4
              with:
                # submodules: true
-               token: ${{ secrets.<secret_name> }}
 
            - name: actions-template-sync
              uses: AndreasAugustin/actions-template-sync@v2
              with:
                source_gh_token: ${{ secrets.GITHUB_TOKEN }}
+               target_gh_token: ${{ secrets.<secret_name> }}
                source_repo_path: <owner/repo>
                upstream_branch: <target_branch> # defaults to main
                pr_labels: <label1>,<label2>[,...] # optional, no default
@@ -762,7 +814,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://natwelch.com"><img src="https://avatars.githubusercontent.com/u/20201?v=4?s=100" width="100px;" alt="Nat Welch"/><br /><sub><b>Nat Welch</b></sub></a><br /><a href="https://github.com/AndreasAugustin/actions-template-sync/issues?q=author%3Aicco" title="Bug reports">🐛</a> <a href="https://github.com/AndreasAugustin/actions-template-sync/commits?author=icco" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/PepijnB"><img src="https://avatars.githubusercontent.com/u/24453103?v=4?s=100" width="100px;" alt="Pepijn Boer"/><br /><sub><b>Pepijn Boer</b></sub></a><br /><a href="https://github.com/AndreasAugustin/actions-template-sync/issues?q=author%3APepijnB" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/PepijnB"><img src="https://avatars.githubusercontent.com/u/24453103?v=4?s=100" width="100px;" alt="Pepijn Boer"/><br /><sub><b>Pepijn Boer</b></sub></a><br /><a href="https://github.com/AndreasAugustin/actions-template-sync/issues?q=author%3APepijnB" title="Bug reports">🐛</a> <a href="https://github.com/AndreasAugustin/actions-template-sync/commits?author=PepijnB" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/alexvanderberkel"><img src="https://avatars.githubusercontent.com/u/862899?v=4?s=100" width="100px;" alt="Alex"/><br /><sub><b>Alex</b></sub></a><br /><a href="https://github.com/AndreasAugustin/actions-template-sync/commits?author=alexvanderberkel" title="Code">💻</a> <a href="#ideas-alexvanderberkel" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/AndreasAugustin/actions-template-sync/pulls?q=is%3Apr+reviewed-by%3Aalexvanderberkel" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/AndreasAugustin/actions-template-sync/commits?author=alexvanderberkel" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
