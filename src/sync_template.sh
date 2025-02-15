@@ -110,8 +110,10 @@ function gh_login_target_github() {
     target_repo_hostname=$(echo "${github_server_url}" | cut -d '/' -f 3)
     info "target server url: ${target_repo_hostname}"
     info "logging out of the target if logged in"
+
     gh auth logout --hostname "${target_repo_hostname}" || debug "not logged in"
     unset GH_TOKEN
+
     info "login to the target git repository"
     gh auth login --git-protocol "https" --hostname "${target_repo_hostname}" --with-token <<< "${TARGET_GH_TOKEN}"
     gh auth setup-git --hostname "${target_repo_hostname}"
@@ -121,7 +123,7 @@ function gh_login_target_github() {
   echo "::endgroup::"
 }
 
-#######################################
+#######################################pr
 # set the gh action outputs if run with github action.
 # Arguments:
 #   pr_branch
@@ -336,6 +338,18 @@ function push () {
   local is_force=$2
   local is_with_tags=$3
 
+  # Ensure the branch exists locally
+  if ! git show-ref --verify --quiet "refs/heads/${branch}"; then
+    err "Branch '${branch}' does not exist locally. Please create or checkout the branch before pushing."
+    return 1
+  fi
+
+    # Check if the branch exists in the remote repository
+  if git ls-remote --exit-code --heads origin "${branch}"; then
+    warn "Git branch '${branch}' exists in the remote repository. Exiting."
+    return 1
+  fi
+
   args=(--set-upstream origin "${branch}")
 
   if [ "$is_force" == true ] ; then
@@ -348,8 +362,32 @@ function push () {
     args+=(--tags)
   fi
 
-  git push "${args[@]}"
+  
+  if [[ -n "${TARGET_REPO_PATH}" ]]; then
+    export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
+    TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
+    export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"      
+    git push "${TARGET_REPO}" "${args[@]}"     
+  else
+    git push "${args[@]}"
+  fi  
+  
+  # Increase Git buffer size
+  git config --global http.postBuffer 524288000
 
+  # Retry the push operation
+  for i in {1..3}; do
+    if git push "${args[@]}"; then
+      info "pushed successfully"
+      return 0
+    else
+      warn "push failed, retrying ($i/3)"
+      sleep 5
+    fi
+  done
+
+  err "push failed after 3 attempts"
+  return 1
 }
 
 ####################################
