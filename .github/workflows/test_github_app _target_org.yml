@@ -38,7 +38,7 @@ jobs:
         # https://github.com/actions/checkout#usage
         uses: actions/checkout@v4
         with:
-          token: ${{ steps.source-app-token.outputs.token }}
+          token: ${{ steps.target-app-token.outputs.token }}
           repository: alexvanderberkel/private-test-repo-2
           persist-credentials: false # Don't set this to true as otherwise the token will be stored in the local git config and the run will fail
 
