@@ -16,7 +16,7 @@ jobs:
       contents: write
       pull-requests: write
   call_github_app_test_target_org:
-    uses: ./.github/workflows/test_github_app _target_org.yml
+    uses: alexvanderberkel/actions-template-sync@feat/target-org-push
     secrets: inherit
     permissions:
       contents: write
