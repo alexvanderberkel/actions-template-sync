@@ -339,7 +339,7 @@ function push () {
   local is_force=$2
   local is_with_tags=$3
   
-  args=(--set-upstream origin "${branch}")
+  
 
   if [ "$is_force" == true ] ; then
     warn "forcing the push."
@@ -351,9 +351,20 @@ function push () {
     args+=(--tags)
   fi
 
-  git push "${args[@]}"
-
   
+  # Set the remote URL to the target repository if specified
+  if [[ -n "${TARGET_REPO_PATH}" ]]; then
+    export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
+    TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
+    export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"   
+
+    args+=("--set-upstream" "${TARGET_REPO}" "${branch}")
+  else
+    args=(--set-upstream origin "${branch}")
+  
+  fi
+  
+
 
 
 }
