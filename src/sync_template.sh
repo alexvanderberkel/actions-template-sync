@@ -346,13 +346,14 @@ function push () {
     return 1
   fi
 
-  info "branch exists"
+
   # Check if the branch exists in the remote repository
   if git ls-remote --exit-code --heads origin "${branch}"; then
     warn "Git branch '${branch}' exists in the remote repository. Exiting."
     return 1
   fi
 
+  info "branch exists"
   args=(--set-upstream origin "${branch}")
 
   if [ "$is_force" == true ] ; then
