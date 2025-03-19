@@ -339,14 +339,15 @@ function push () {
   local is_force=$2
   local is_with_tags=$3
 
-  info "branch exists"
+  
   # Ensure the branch exists locally
   if ! git show-ref --verify --quiet "refs/heads/${branch}"; then
     err "Branch '${branch}' does not exist locally. Please create or checkout the branch before pushing."
     return 1
   fi
 
-    # Check if the branch exists in the remote repository
+  info "branch exists"
+  # Check if the branch exists in the remote repository
   if git ls-remote --exit-code --heads origin "${branch}"; then
     warn "Git branch '${branch}' exists in the remote repository. Exiting."
     return 1
