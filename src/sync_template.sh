@@ -110,8 +110,10 @@ function gh_login_target_github() {
     target_repo_hostname=$(echo "${github_server_url}" | cut -d '/' -f 3)
     info "target server url: ${target_repo_hostname}"
     info "logging out of the target if logged in"
+
     gh auth logout --hostname "${target_repo_hostname}" || debug "not logged in"
     unset GH_TOKEN
+
     info "login to the target git repository"
     gh auth login --git-protocol "https" --hostname "${target_repo_hostname}" --with-token <<< "${TARGET_GH_TOKEN}"
     gh auth setup-git --hostname "${target_repo_hostname}"
@@ -121,7 +123,7 @@ function gh_login_target_github() {
   echo "::endgroup::"
 }
 
-#######################################
+#######################################pr
 # set the gh action outputs if run with github action.
 # Arguments:
 #   pr_branch
@@ -333,10 +335,21 @@ function push () {
 
 
   local branch=$1
+  
   local is_force=$2
   local is_with_tags=$3
+  
+    # Set the remote URL to the target repository if specified
+  if [[ -n "${TARGET_REPO_PATH}" ]]; then
+    export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
+    TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
+    export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"   
+    
+    git remote set-url origin "${TARGET_REPO}" 
+    
+  fi
 
-  args=(--set-upstream origin "${branch}")
+  args=(--set-upstream origin "${branch}")    
 
   if [ "$is_force" == true ] ; then
     warn "forcing the push."
@@ -348,7 +361,10 @@ function push () {
     args+=(--tags)
   fi
 
+  info "execute push"
   git push "${args[@]}"
+
+
 
 }
 
