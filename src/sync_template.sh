@@ -338,21 +338,6 @@ function push () {
   
   local is_force=$2
   local is_with_tags=$3
-
-  
-  # Ensure the branch exists locally
-  if ! git show-ref --verify --quiet "refs/heads/${branch}"; then
-    err "Branch '${branch}' does not exist locally. Please create or checkout the branch before pushing."
-    return 1
-  fi
-
-
-  # Check if the branch exists in the remote repository
-  if git ls-remote --exit-code --heads origin "${branch}"; then
-    warn "Git branch '${branch}' exists in the remote repository. Exiting."
-    return 1
-  fi
-
   
   args=(--set-upstream origin "${branch}")
 
@@ -366,33 +351,11 @@ function push () {
     args+=(--tags)
   fi
 
-  
-  # Set the remote URL to the target repository if specified
-  if [[ -n "${TARGET_REPO_PATH}" ]]; then
-    export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
-    TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
-    export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"  
-    
-    # Update the remote URL
-    git remote set-url origin "${TARGET_REPO}"
-  fi
-  
-  # Increase Git buffer size
-  git config --global http.postBuffer 524288000
+  git push "${args[@]}"
 
-  # Retry the push operation
-  for i in {1..3}; do
-    if git push "${args[@]}"; then
-      info "pushed successfully"
-      return 0
-    else
-      warn "push failed, retrying ($i/3)"
-      sleep 5
-    fi
-  done
+  
 
-  err "push failed after 3 attempts"
-  return 1
+
 }
 
 ####################################
