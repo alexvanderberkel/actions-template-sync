@@ -346,7 +346,7 @@ function push () {
     export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"   
 
     args=(--set-upstream "${TARGET_REPO}" "${branch}")
-    info "test output"
+    
   else
     args=(--set-upstream origin "${branch}")  
   fi  
@@ -361,6 +361,7 @@ function push () {
     args+=(--tags)
   fi
 
+  info "execute push"
   git push "${args[@]}"
 
 
