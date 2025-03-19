@@ -353,7 +353,7 @@ function push () {
     return 1
   fi
 
-  info "branch exists"
+  
   args=(--set-upstream origin "${branch}")
 
   if [ "$is_force" == true ] ; then
@@ -366,7 +366,7 @@ function push () {
     args+=(--tags)
   fi
 
-  
+  info "branch exists"
   if [[ -n "${TARGET_REPO_PATH}" ]]; then
     export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
     TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
