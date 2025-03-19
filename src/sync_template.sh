@@ -344,12 +344,12 @@ function push () {
     export TARGET_REPO_HOSTNAME="${HOSTNAME:-${DEFAULT_REPO_HOSTNAME}}"
     TARGET_REPO_PREFIX="https://${TARGET_REPO_HOSTNAME}/"    
     export TARGET_REPO="${TARGET_REPO_PREFIX}${TARGET_REPO_PATH}"   
-
-    args=(--set-upstream "${TARGET_REPO}" "${branch}")
     
-  else
-    args=(--set-upstream origin "${branch}")  
-  fi  
+    git remote set-url origin "${TARGET_REPO}" 
+    
+  fi
+
+  args=(--set-upstream origin "${branch}")    
 
   if [ "$is_force" == true ] ; then
     warn "forcing the push."
